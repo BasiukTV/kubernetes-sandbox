@@ -1,0 +1,64 @@
+name: Login to an AKS Cluster
+
+on:
+  workflow_call:
+    inputs:
+      resource_group:
+        description: "Azure Resource Group Name with provisioned AKS cluster"
+        required: true
+        type: string
+      cluster_name:
+        description: "AKS Cluster Name"
+        required: true
+        type: string
+      azure_tenant_id:
+        description: "Azure Tenant Id with provisioned AKS cluster (and admin Service Principal)"
+        required: true
+        type: string
+      azure_subscription_id:
+        description: "Azure Subscription Id with provisioned AKS cluster (and admin Service Principal)"
+        required: true
+        type: string
+      azure_sp_client_id:
+        description: "Azure Service Principal Application Id that is authorized to admin AKS cluster"
+        required: true
+        type: string
+    secrets:
+      azure_sp_client_secret:
+        description: "Azure Service Principal Client Secret"
+        required: true
+
+jobs:
+  login_to_aks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Azure CLI
+        run: |
+          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          creds: '{"tenantId":"${{ inputs.azure_tenant_id }}", "subscriptionId":"${{ inputs.azure_subscription_id }}", "clientId":"${{ inputs.azure_sp_client_id }}","clientSecret":"${{ secrets.azure_sp_client_secret }}"}'
+
+      - name: Install Kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: "latest"
+
+      - name: Install Kubelogin
+        uses: azure/use-kubelogin@v1
+        with:
+          kubelogin-version: "v0.1.4"
+
+      - name: Get AKS Credentials
+        run: |
+          az aks get-credentials --resource-group ${{ inputs.resource_group }} --name ${{ inputs.cluster_name }} --overwrite-existing
+
+      - name: Configure Kubelogin for Azure CLI Authentication
+        run: |
+          kubelogin convert-kubeconfig -l azurecli
+
+      - name: Verify Kubectl Connection
+        run: |
+          kubectl cluster-info

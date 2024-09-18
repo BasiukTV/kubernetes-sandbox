@@ -1,0 +1,25 @@
+name: Installs Prometheus and Grafana on the existing k8s (currently AKS) cluster
+
+on:
+  workflow_dispatch:
+    inputs:
+      resource_group:
+        description: "Azure Resource Group Name"
+        required: true
+        default: "rg-taras-aks-t-eu"
+      cluster_name:
+        description: "AKS Cluster Name"
+        required: true
+        default: "aks-taras-aks-t-eu"
+
+jobs:
+  call_aks_login:
+    uses: ./.github/workflows/.aks_login.yaml
+    with:
+      azure_tenant_id: ${{ vars.AZURE_TENANT_ID }}
+      azure_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      azure_sp_client_id: ${{ vars.AZURE_SP_CLIENT_ID }}
+      resource_group: ${{ github.event.inputs.resource_group }}
+      cluster_name: ${{ github.event.inputs.cluster_name }}
+    secrets:
+      azure_sp_client_secret: ${{ secrets.AZURE_SP_CLIENT_SECRET }}
