@@ -1,0 +1,66 @@
+name: Azure + AKS Commons Action
+description: "Logs into Azure and AKS cluster, installs Helm on the runner."
+inputs:
+  resource_group:
+    description: "Azure Resource Group Name with provisioned AKS cluster"
+    required: true
+  cluster_name:
+    description: "AKS Cluster Name"
+    required: true
+  azure_tenant_id:
+    description: "Azure Tenant Id with provisioned AKS cluster (and admin Service Principal)"
+    required: true
+  azure_subscription_id:
+    description: "Azure Subscription Id with provisioned AKS cluster (and admin Service Principal)"
+    required: true
+  azure_sp_client_id:
+    description: "Azure Service Principal Application Id that is authorized to admin AKS cluster"
+    required: true
+  azure_sp_client_secret:
+    description: "Azure Service Principal Client Secret"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Install Azure CLI
+      shell: bash
+      run: |
+        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+    - name: Log in to Azure
+      uses: azure/login@v2
+      with:
+        creds: '{"tenantId":"${{ inputs.azure_tenant_id }}", "subscriptionId":"${{ inputs.azure_subscription_id }}", "clientId":"${{ inputs.azure_sp_client_id }}","clientSecret":"${{ inputs.azure_sp_client_secret }}"}'
+
+    - name: Install Kubectl
+      uses: azure/setup-kubectl@v4
+      with:
+        version: "latest"
+
+    - name: Install Kubelogin
+      uses: azure/use-kubelogin@v1
+      with:
+        kubelogin-version: "v0.1.4"
+
+    - name: Get AKS Credentials
+      shell: bash
+      run: |
+        az aks get-credentials --resource-group ${{ inputs.resource_group }} --name ${{ inputs.cluster_name }} --overwrite-existing
+
+    - name: Configure Kubelogin for Azure CLI Authentication
+      shell: bash
+      run: |
+        kubelogin convert-kubeconfig -l azurecli
+
+    - name: Verify Kubectl Connection
+      shell: bash
+      run: |
+        kubectl cluster-info
+
+    - name: Install Helm
+      uses: Azure/setup-helm@v4.2.0
+
+    - name: Verify Helm Installation
+      shell: bash
+      run: |
+        helm version
