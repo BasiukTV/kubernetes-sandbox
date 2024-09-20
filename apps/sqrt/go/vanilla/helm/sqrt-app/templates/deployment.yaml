@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sqrt-app-deployment
+  labels:
+    app: sqrt-app
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: sqrt-app
+  template:
+    metadata:
+      labels:
+        app: sqrt-app
+    spec:
+      containers:
+      - name: sqrt-app-cont
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 80

@@ -1,0 +1,5 @@
+.Dockerignore
+Dockerfile
+README.md
+
+./helm
