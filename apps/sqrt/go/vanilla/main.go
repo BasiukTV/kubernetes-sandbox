@@ -25,9 +25,9 @@ func sqrtHandler(w http.ResponseWriter, r *http.Request) {
 	var results []float64
 
 	if numbersStr == "" { // If no input is given
-		// Generate 100 random numbers between 0 and 100
-		for i := 0; i < 100; i++ {
-			num := rand.Float64() * 100
+		// Generate 1000 random numbers between 0 and 1,000,000,000
+		for i := 0; i < 1000; i++ {
+			num := rand.Float64() * 1000000000
 			numbers = append(numbers, num)
 		}
 	} else {

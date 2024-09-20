@@ -1,6 +1,6 @@
 ## SQRT App
 
-Go web-app for calculating Square Roots of (random) number.
+Go web-app for calculating Square Roots of (random) numbers.
 
 ### Dependencies
 * Go Installation
