@@ -4,23 +4,28 @@
  *
  * Usage Examples:
  *   http://localhost:8080/sqrt
+ *   http://localhost:8080/sqrt?compressed=true
  *   http://localhost:8080/sqrt?numbers=4,9,16,25
  */
 
 package main
 
 import (
+	"compress/gzip" // For Gzip compression
 	"encoding/json" // For JSON encoding of the results
 	"fmt"           // For printing things out to stdout
+	"io"            // For io.Writter
 	"math"          // To actually calculate the square root
 	"math/rand"     // For random number generation
 	"net/http"      // For HTTP requests handling
+	"runtime"       // For CPU numbers configuration
 	"strconv"       // For parsing numbers our of strings
 	"strings"       // For URL params string processing
 )
 
 func sqrtHandler(w http.ResponseWriter, r *http.Request) {
 	numbersStr := r.URL.Query().Get("numbers")
+	compressed := r.URL.Query().Get("compressed") == "true"
 	var numbers []float64
 	var results []float64
 
@@ -55,11 +60,27 @@ func sqrtHandler(w http.ResponseWriter, r *http.Request) {
 		"results": results,
 	}
 
+	// Apply Gzip compression if the "compressed" URL parameter is set to "true"
+	var writer io.Writer = w
+	if compressed {
+		w.Header().Set("Content-Encoding", "gzip")
+		gz := gzip.NewWriter(w)
+		defer gz.Close()
+		writer = gz
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(writer).Encode(response)
 }
 
 func main() {
+	// Get the number of available CPUs
+	numCPU := runtime.NumCPU()
+
+	// Set GOMAXPROCS to the number of CPUs
+	runtime.GOMAXPROCS(numCPU)
+	fmt.Printf("Running with %d CPUs\n", numCPU)
+
 	http.HandleFunc("/sqrt", sqrtHandler)
 	fmt.Println("Server started at :80")
 	if err := http.ListenAndServe(":80", nil); err != nil {
