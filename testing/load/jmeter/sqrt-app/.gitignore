@@ -1,0 +1,5 @@
+*.jtl
+*.log
+
+# Anything inside the ./report directory
+report/
