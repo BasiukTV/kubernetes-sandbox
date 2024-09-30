@@ -7,32 +7,19 @@
 * [JMeter](https://jmeter.apache.org/download_jmeter.cgi) on PATH
 
 ## Test Run Parameters
-* Test will hit the following URL: ```http://<SQRT_APP_IP_ADDRESS>/sqrt```
-  * <i><span style="color: red;">Don't forget to edit above SQRT_APP_IP_ADDRESS in the .jmx file.</span></i>
+* Test will hit the following URL: ```http://<SQRT_APP_IP_ADDRESS>/sqrt?compressed=<true|false>```
 * Test will run for (seconds): ```600```
 * Test will run at most threads: ```100```
 * Test will take this long to rump-up (seconds): ```300```
 
 ### Test Run Parameters Customization
-* Sadly, you can only open .jmx file with JMeter UI and edit it.
+* For anything other than the IP address change, you can only open .jmx file with JMeter UI and edit it.
 
 ## Test Run Example
 Run from this directory:
-* ```jmeter -n -t sqrt_app_600s-duration_100-threads-max_300s-rampup.jmx -l simple_test_results.jtl```
-
-### Broken Example
-<i><span style="color: red;">Below test run customization should be possible, alas, it doesn't work.</span></i>
-```
-jmeter -n \
-  -t simple_test_plan.jmx \
-  -l simple_test_results.jtl \
-  -JPROTOCOL=http \
-  -JHOST=127.0.0.1 \
-  -JPATH="/" \
-  -JTHREADS=100 \
-  -JTOTAL_DURATION=600 \
-  -JRAMPUP_DURATION=300
-```
+* ```jmeter -n -t sqrt_app_600s-duration_100-threads-max_300s-rampup.jmx -l simple_test_results.jtl -JHOST=<SQRT_APP_IP_ADDRESS>```
+  * <i><span style="color: red;">Don't forget to edit above SQRT_APP_IP_ADDRESS value.</span></i>
+  * Use ```sqrt_app_600s-duration_100-threads-max_300s-rampup_compressed_output.jmx``` file for the app to return compressed output (saves Network bandwidth, but uses a lot more CPU).
 
 ## Generate Test Report (Dashboard)
 1. Run from this directory:
