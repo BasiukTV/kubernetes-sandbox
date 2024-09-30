@@ -11,6 +11,8 @@ Sandbox repo to try out various advanced k8s topics.
     - [Prometheus and Grafana](#prometheus-and-grafana)
   - [Applications](#applications)
     - [SQRT App](#sqrt-app)
+  - [Testing](#testing)
+    - [Load Testing](#load-testing)
 
 ## General Prerequisites
 
@@ -36,3 +38,9 @@ Sandbox repo to try out various advanced k8s topics.
 * [Source Code](./apps/sqrt/go/vanilla/)
 * [Helm Chart](./apps/sqrt/go/vanilla/helm/sqrt-app/)
 * [Deployment Workflow](https://github.com/BasiukTV/kubernetes-sandbox/actions/workflows/20_deploy_sqrt_app.yaml)
+
+## Testing
+### Load Testing
+* SQRT App Load Testing (with JMeter)
+  * [Files Directory](./testing/load/jmeter/sqrt-app/)
+  * [Load Test Workflow](https://github.com/BasiukTV/kubernetes-sandbox/actions/workflows/30_loadtest_sqrt_app.yaml)

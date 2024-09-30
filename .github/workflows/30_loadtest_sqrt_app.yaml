@@ -1,0 +1,82 @@
+name: 30 Load Test SQRT App (with JMeter)
+
+on:
+  workflow_dispatch:
+    inputs:
+      resource_group:
+        description: "Azure Resource Group Name"
+        required: true
+        default: "rg-taras-aks-t-eu"
+      cluster_name:
+        description: "AKS Cluster Name"
+        required: true
+        default: "aks-taras-aks-t-eu"
+      sqrt_app_compressed_output:
+        description: "SQRT App returns compressed output?"
+        required: true
+        type: boolean
+        default: false
+
+jobs:
+  loadtest_sqrt_app:
+    runs-on: ubuntu-latest
+    env:
+      AKS_NAMESPACE: apps-test
+      AKS_SERVICE_NAME: sqrt-app-svc
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: AZ and AKS Login and Setup
+        uses: ./.github/actions/az-aks-commons
+        with:
+          azure_tenant_id: ${{ vars.AZURE_TENANT_ID }}
+          azure_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          azure_sp_client_id: ${{ vars.AZURE_SP_CLIENT_ID }}
+          resource_group: ${{ github.event.inputs.resource_group }}
+          cluster_name: ${{ github.event.inputs.cluster_name }}
+          azure_sp_client_secret: ${{ secrets.AZURE_SP_CLIENT_SECRET }}
+
+      - name: Get SQRT APP Host IP Address
+        id: get-ip
+        run: |
+          export SQRT_APP_HOST_IP=$(kubectl get svc ${{ env.AKS_SERVICE_NAME }} -n ${{ env.AKS_NAMESPACE }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          echo "SQRT APP Host IP: $SQRT_APP_HOST_IP"
+          echo "sqrt_app_host_ip=$SQRT_APP_HOST_IP" >> $GITHUB_OUTPUT
+
+      - name: Install JMeter
+        id: install-jmeter
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-11-jdk wget
+          wget https://downloads.apache.org//jmeter/binaries/apache-jmeter-5.6.3.tgz
+          tar -xzf apache-jmeter-5.6.3.tgz
+          JMETER_HOME=$PWD/apache-jmeter-5.6.3
+          echo "jmeter_home=$JMETER_HOME" >> $GITHUB_OUTPUT
+          echo "new_path=$JMETER_HOME/bin:$PATH" >> $GITHUB_OUTPUT
+
+      - name: Run JMeter Load Test
+        env:
+          JMETER_HOME: ${{ steps.install-jmeter.outputs.jmeter_home }}
+          PATH: ${{ steps.install-jmeter.outputs.new_path }}
+          SQRT_APP_HOST_IP: ${{ steps.get-ip.outputs.sqrt_app_host_ip }}
+        run: |
+          cd testing/load/jmeter/sqrt-app
+
+          if [ "${{ github.event.inputs.sqrt_app_compressed_output }}" == "true" ]; then
+            TEST_FILE=sqrt_app_600s-duration_100-threads-max_300s-rampup_compressed_output.jmx
+          else
+            TEST_FILE=sqrt_app_600s-duration_100-threads-max_300s-rampup.jmx
+          fi
+
+          echo "Using test file: $TEST_FILE"
+          echo "SQRT APP Host IP: $SQRT_APP_HOST_IP"
+
+          jmeter -n -t $TEST_FILE -l results.jtl -JHOST=$SQRT_APP_HOST_IP -e -o report
+          cd - >> /dev/null
+
+      - name: Upload JMeter report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jmeter-report
+          path: testing/load/jmeter/sqrt-app/report
