@@ -22,7 +22,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AKS_NAMESPACE: apps-test
-      AKS_SERVICE_NAME: sqrt-app-svc
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -40,7 +39,7 @@ jobs:
       - name: Get SQRT APP Host IP Address
         id: get-ip
         run: |
-          export SQRT_APP_HOST_IP=$(kubectl get svc ${{ env.AKS_SERVICE_NAME }} -n ${{ env.AKS_NAMESPACE }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          export SQRT_APP_HOST_IP=$(kubectl get ingress ingress-controller -n ${{ env.AKS_NAMESPACE }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
           echo "SQRT APP Host IP: $SQRT_APP_HOST_IP"
           echo "sqrt_app_host_ip=$SQRT_APP_HOST_IP" >> $GITHUB_OUTPUT
 

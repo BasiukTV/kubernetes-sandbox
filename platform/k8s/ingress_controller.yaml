@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-controller
+  namespace: apps-test
+spec:
+  ingressClassName: webapprouting.kubernetes.azure.com
+  rules:
+    - http:
+        paths:
+          - backend:
+              service:
+                name: sqrt-app-svc
+                port:
+                  number: 80
+            path: /sqrt
+            pathType: Prefix

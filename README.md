@@ -9,6 +9,9 @@ Sandbox repo to try out various advanced k8s topics.
     - [AKS (Azure Cloud)](#aks-azure-cloud)
   - [Application Performance Monitoring (APM)](#application-performance-monitoring-apm)
     - [Prometheus and Grafana](#prometheus-and-grafana)
+  - [Platform Tools](#platform-tools)
+    - [Core (k8s) Tools](#core-k8s-tools)
+      - [Ingress Controller](#ingress-controller)
   - [Applications](#applications)
     - [SQRT App](#sqrt-app)
   - [Testing](#testing)
@@ -30,6 +33,14 @@ Sandbox repo to try out various advanced k8s topics.
 ### Prometheus and Grafana
 * Install by running this [Workflow](https://github.com/BasiukTV/kubernetes-sandbox/actions/workflows/10_install_prometheus_grafana.yaml)
 * Access by following this [Documentation](docs/apm/prometheus_grafana/post_install.md)
+
+## Platform Tools
+
+### Core (k8s) Tools
+
+#### Ingress Controller
+* [Manifest File](./platform/k8s/ingress_controller.yaml)
+* [Deployment Workflow](https://github.com/BasiukTV/kubernetes-sandbox/actions/workflows/11_install_ingress_controller.yaml)
 
 ## Applications
 
