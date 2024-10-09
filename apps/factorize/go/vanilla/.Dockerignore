@@ -1,0 +1,6 @@
+.Dockerignore
+Dockerfile
+README.md
+
+./helm
+factorize-app

@@ -14,6 +14,7 @@ Sandbox repo to try out various advanced k8s topics.
       - [Ingress Controller](#ingress-controller)
   - [Applications](#applications)
     - [SQRT App](#sqrt-app)
+    - [Factorize App](#factorize-app)
   - [Testing](#testing)
     - [Load Testing](#load-testing)
 
@@ -49,6 +50,11 @@ Sandbox repo to try out various advanced k8s topics.
 * [Source Code](./apps/sqrt/go/vanilla/)
 * [Helm Chart](./apps/sqrt/go/vanilla/helm/sqrt-app/)
 * [Deployment Workflow](https://github.com/BasiukTV/kubernetes-sandbox/actions/workflows/20_deploy_sqrt_app.yaml)
+
+### Factorize App
+
+* [Source Code](./apps/factorize/go/vanilla/)
+* [Helm Chart](./apps/factorize/go/vanilla/helm/factorize-app/)
 
 ## Testing
 ### Load Testing

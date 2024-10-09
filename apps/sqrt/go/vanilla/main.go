@@ -3,9 +3,9 @@
  * or 100 random float numbers if no input was given.
  *
  * Usage Examples:
- *   http://localhost:8080/sqrt
- *   http://localhost:8080/sqrt?compressed=true
- *   http://localhost:8080/sqrt?numbers=4,9,16,25
+ *   http://localhost:80/sqrt
+ *   http://localhost:80/sqrt?compressed=true
+ *   http://localhost:80/sqrt?numbers=4,9,16,25
  */
 
 package main
