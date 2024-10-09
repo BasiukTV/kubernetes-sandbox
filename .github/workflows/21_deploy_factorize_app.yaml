@@ -1,0 +1,66 @@
+name: 21 Build and Deploy Factorize App
+
+on:
+  workflow_dispatch:
+    inputs:
+      resource_group:
+        description: "Azure Resource Group Name"
+        required: true
+        default: "rg-taras-aks-t-eu"
+      cluster_name:
+        description: "AKS Cluster Name"
+        required: true
+        default: "aks-taras-aks-t-eu"
+      acr_url:
+        description: "Azure Container Registry (ACR) URL"
+        required: true
+        default: "acrtarasaksteu.azurecr.io"
+
+jobs:
+  deploy_factorize_app:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_REPO: ${{ github.event.inputs.acr_url }}/factorize-app
+      IMAGE_TAG: ${{ github.run_id }}
+      NAMESPACE: apps-test
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: AZ and AKS Login and Setup
+        uses: ./.github/actions/az-aks-commons
+        with:
+          azure_tenant_id: ${{ vars.AZURE_TENANT_ID }}
+          azure_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          azure_sp_client_id: ${{ vars.AZURE_SP_CLIENT_ID }}
+          resource_group: ${{ github.event.inputs.resource_group }}
+          cluster_name: ${{ github.event.inputs.cluster_name }}
+          azure_sp_client_secret: ${{ secrets.AZURE_SP_CLIENT_SECRET }}
+
+      # Note, ubuntu-latest had Docker installed already
+      - name: Login to Docker Registry (ACR)
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ github.event.inputs.acr_url }}
+          username: ${{ vars.AZURE_SP_CLIENT_ID }}
+          password: ${{ secrets.AZURE_SP_CLIENT_SECRET }}
+
+      - name: Push Factorize App Docker Image (to ACR)
+        run: |
+          cd ./apps/factorize/go/vanilla/
+          docker build -t $IMAGE_REPO:$IMAGE_TAG .
+          docker push $IMAGE_REPO:$IMAGE_TAG
+          cd - >> /dev/null
+
+      # We expect k8s cluster to be authorized to pull images from docker registry (ACR) already
+      - name: Deploy Factorize App (to AKS) with Helm
+        run: |
+          cd ./apps/factorize/go/vanilla/helm/factorize-app
+          helm upgrade factorize-app . --install \
+            --namespace $NAMESPACE --create-namespace \
+            -f values/test.yaml \
+            --set image.repository=$IMAGE_REPO,image.tag=$IMAGE_TAG
+          cd - >> /dev/null
+
+      - name: Adding Workflow Summary + App testing instructions
+        run: cat ./docs/apps/factorize/post_deployment.md >> $GITHUB_STEP_SUMMARY

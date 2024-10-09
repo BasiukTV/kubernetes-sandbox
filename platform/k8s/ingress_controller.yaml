@@ -15,3 +15,10 @@ spec:
                   number: 80
             path: /sqrt
             pathType: Prefix
+          - backend:
+              service:
+                name: factorize-app-svc
+                port:
+                  number: 80
+            path: /factorize
+            pathType: Prefix
