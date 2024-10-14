@@ -27,5 +27,6 @@ Run from this directory:
 2. Open ```index.html``` file inside of the ./report directory to view the report
 
 ## Findings
-* Examine the [Latest Report](./latest_report/) directory.
+* Examine the [Reports](./reports/) directory.
 * It seems like SQRT app is currently Egress network bound. Which makes sense - calculating 1000 square roots takes only a bit of CPU, virtually no memory, but a lot of output data to send over the network.
+* Enabling the output compressions makes the app CPU bound. Output size is cut in half, but the app is using 6 to 8 times more CPU.
