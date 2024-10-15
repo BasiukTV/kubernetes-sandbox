@@ -1,4 +1,4 @@
-name: 30 Load Test Factorize App (with JMeter)
+name: 31 Load Test Factorize App (with JMeter)
 
 on:
   workflow_dispatch:
