@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: factorize-app-deployment
+  name: {{ .Values.appName }}-app-deployment
   labels:
-    app: factorize-app
+    app: {{ .Values.appName }}-app
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: factorize-app
+      app: {{ .Values.appName }}-app
   template:
     metadata:
       labels:
-        app: factorize-app
+        app: {{ .Values.appName }}-app
     spec:
       containers:
-      - name: factorize-app-cont
+      - name: {{ .Values.appName }}-app-cont
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:

@@ -1,4 +1,8 @@
+appName: factorize
+
 replicaCount: 1
+minReplicas: 1
+maxReplicas: 10
 
 image:
   repository: tbeit/factorize-app
@@ -16,6 +20,9 @@ resources:
   limits:
     cpu: "1000m"
     memory: "1024Mi"
+  target:
+    cpu:
+      averageUtilization: 65
 
 nodeSelector: {}
 
