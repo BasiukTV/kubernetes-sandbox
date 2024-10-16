@@ -56,7 +56,7 @@ jobs:
           FACTORIZE_APP_HOST_IP: ${{ steps.get-ip.outputs.factorize_app_host_ip }}
         run: |
           cd testing/load/jmeter/factorize-app
-          TEST_FILE=factorize_app_600s-duration_50-threads-max_300s-rampup.jmx
+          TEST_FILE=factorize_app_1200s-duration_20-threads-max_600s-rampup.jmx
 
           echo "Using test file: $TEST_FILE"
           echo "SQRT APP Host IP: $FACTORIZE_APP_HOST_IP"

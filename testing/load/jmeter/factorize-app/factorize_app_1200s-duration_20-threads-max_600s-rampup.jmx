@@ -27,12 +27,12 @@
           </elementProp>
           <elementProp name="TOTAL_DURATION" elementType="Argument">
             <stringProp name="Argument.name">TOTAL_DURATION</stringProp>
-            <stringProp name="Argument.value">600</stringProp>
+            <stringProp name="Argument.value">1200</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="RAMPUP_DURATION" elementType="Argument">
             <stringProp name="Argument.name">RAMPUP_DURATION</stringProp>
-            <stringProp name="Argument.value">300</stringProp>
+            <stringProp name="Argument.value">600</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
