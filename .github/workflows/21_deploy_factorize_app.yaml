@@ -15,6 +15,10 @@ on:
         description: "Azure Container Registry (ACR) URL"
         required: true
         default: "acrtarasaksteu.azurecr.io"
+      cpu_request:
+        description: "Container CPU request."
+        required: true
+        default: "100m"
 
 jobs:
   deploy_factorize_app:
@@ -59,7 +63,8 @@ jobs:
           helm upgrade factorize-app . --install \
             --namespace $NAMESPACE --create-namespace \
             -f values/test.yaml \
-            --set image.repository=$IMAGE_REPO,image.tag=$IMAGE_TAG
+            --set image.repository=$IMAGE_REPO,image.tag=$IMAGE_TAG \
+            --set resources.requests.cpu=${{ github.event.inputs.cpu_request }}
           cd - >> /dev/null
 
       - name: Adding Workflow Summary + App testing instructions
